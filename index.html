@@ -220,18 +220,25 @@ function runAway() {
     isFixed = true;
   }
 
-  // Улетаем в случайное место
+  // Улетаем в случайное место, не перекрывая НЕТ
   var maxX = window.innerWidth  - BW - M;
   var maxY = window.innerHeight - BH - M;
   var curX = parseFloat(btnDa.style.left);
   var curY = parseFloat(btnDa.style.top);
+  var net  = document.getElementById('btnNet').getBoundingClientRect();
+  var pad  = 20; // отступ вокруг НЕТ
   var newX, newY, attempts = 0;
 
   do {
     newX = M + Math.random() * maxX;
     newY = M + Math.random() * maxY;
     attempts++;
-  } while (attempts < 10 && Math.abs(newX - curX) < 150 && Math.abs(newY - curY) < 100);
+    var overlapsNet = newX < net.right  + pad &&
+                      newX + BW > net.left - pad &&
+                      newY < net.bottom + pad &&
+                      newY + BH > net.top  - pad;
+    var tooCurrent  = Math.abs(newX - curX) < 150 && Math.abs(newY - curY) < 100;
+  } while (attempts < 30 && (overlapsNet || tooCurrent));
 
   btnDa.style.left = newX + 'px';
   btnDa.style.top  = newY + 'px';
